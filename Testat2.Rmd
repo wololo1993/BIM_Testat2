@@ -1,0 +1,23 @@
+---
+title: "Testat 2"
+output:
+  word_document: default
+  pdf_document: default
+---
+
+# Aufgabe 1
+
+Jaaaaaaaaan
+
+# Aufgabe 2
+
+auch Jan, jk, maybe me
+
+# Aufgabe 3
+
+## Aufgabe 3.1
+Sie befinden sich auf Chromosom 12 in Gen NR1H4
+
+## Aufgabe 3.2
+
+Die Aminosäuresequenz wird durch das Gen IFNL (1-3) codiert.
