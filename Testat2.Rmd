@@ -135,6 +135,101 @@ printM(dynpro.printAlignment(decisionPath, st))
 
 ```
 
+```{r}
+## Dotplots
+#s1 = strsplit(input1, split = "")[[1]]
+#s2 = strsplit(input2, split = "")[[1]]
+#
+#dotPlot(s1, s2, col = c("white", "blue"), xaxt="n", yaxt="n", xlab="", ylab = "") # keine ##Achsenbeschriftung
+#axis(1, labels = s1, at=1:length(s1), las=1) # Sequenz als Beschriftung
+#axis(2, labels = s2, at=1:length(s2), las=2)
+#grid(nx = length(s1), ny = length(s2), col = "black")
+```
+
+
+```{r}
+#installiern fall es nich funzt
+
+#install.packages("BiocManager")
+#BiocManager::install()
+#BiocManager::install("Biostrings")
+
+library(Biostrings)
+library(seqinr)
+```
+
+Ich weiß hier nich was er haben will...
+Wenn wir die Score Matrix aus dem Aufgabenblatt nutzen wie verlangt kommt das halt raus ¯\_(ツ)_/¯
+und er meinte in der VL das man hier auch die Aminosäuren vergleichen soll ? aber das wäre beknackt weil man dafür ja BLOSOM50 braucht und das is bei der nächsten  ¯\_(ツ)_/¯
+
+```{r}
+#https://www.rdocumentation.org/packages/Biostrings/versions/2.40.2/topics/pairwiseAlignment
+
+s1 = input1
+s2 = input2
+aa2 = "KIQYKREPNIPSVSLINSLFAWEIRDRI"
+aa1 = "KAQYRRECMIFVWEINRL"
+mat <- nucleotideSubstitutionMatrix(match = 1, mismatch = -1, baseOnly = TRUE)
+#gap opening/extension nicht in der Aufgabe erwähnt und wenn man die ScoreMatrix in der #Aufgabenstellung nimmt wäre es das selbe .... . . oder ich bin zu blöd 
+globalAlign <-
+  pairwiseAlignment(s1, s2, substitutionMatrix = mat,
+                    gapOpening = -2, gapExtension = -2)
+globalAlign
+localAlign <-
+  pairwiseAlignment(s1, s2, type = "local", substitutionMatrix = mat,
+                    gapOpening = -2, gapExtension = -2)
+localAlign
+
+globalAlign <-
+  pairwiseAlignment(s2, s1, substitutionMatrix = mat,
+                    gapOpening = -2, gapExtension = -2)
+globalAlign
+localAlign <-
+  pairwiseAlignment(s2, s1, type = "local", substitutionMatrix = mat,
+                    gapOpening = -2, gapExtension = -2)
+localAlign
+
+
+```
+Hier kommt eig immer KAQYRRE------CMI---FVWEI-NRL raus bei jeglichen Kombinationen
+
+gapOpening kann man leider nicht negativ machen ... also kann man das nicht erzwingen :(
+wäre lustig genauso wie extensions
+
+
+```{R}
+## Amino acid global alignment
+pa = pairwiseAlignment(aa1, aa2, type = "local",
+                  substitutionMatrix = "BLOSUM62",
+                  gapOpening = 0, gapExtension = 0)
+pa
+pa = pairwiseAlignment(aa2, aa1, type = "local",
+                  substitutionMatrix = "BLOSUM62",
+                  gapOpening = 0, gapExtension = 0)
+pa
+
+pa = pairwiseAlignment(aa1, aa2, type = "global",
+                  substitutionMatrix = "BLOSUM62",
+                  gapOpening = 0, gapExtension = 0)
+pa
+pa = pairwiseAlignment(aa2, aa1, type = "global",
+                  substitutionMatrix = "BLOSUM62",
+                  gapOpening = 0, gapExtension = 0)
+pa
+
+# for(i in 0:12){
+#   for(j in 0:8){
+#     p = pairwiseAlignment(aa1, aa2,
+#                   substitutionMatrix = "BLOSUM50",
+#                   gapOpening = i, gapExtension = j)
+#     print(c("Open",i,"ext",j))
+#     print(pattern(p))
+#     print(subject(p))
+#     pp = c(pp,subject(p))
+#   }
+# }
+
+```
 # Aufgabe 3
 
 ## Aufgabe 3.1
