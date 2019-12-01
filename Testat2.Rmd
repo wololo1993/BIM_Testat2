@@ -179,15 +179,47 @@ localAlign <-
   pairwiseAlignment(s1, s2, type = "local", substitutionMatrix = mat,
                     gapOpening = -2, gapExtension = -2)
 localAlign
+```
+Nicht sicher ob das wirklich gefragt war .... ist aus der Aussage in A 2.4 "vergleiche" mit 2.3 entstanden
+```{R}
+#make ASsubstitutionMatrix
+as = "ARNDCQEGHILKMFPSTWYV"
+asTable = strsplit(as, split = "")[[1]]
 
-globalAlign <-
-  pairwiseAlignment(s2, s1, substitutionMatrix = mat,
-                    gapOpening = -2, gapExtension = -2)
-globalAlign
-localAlign <-
-  pairwiseAlignment(s2, s1, type = "local", substitutionMatrix = mat,
-                    gapOpening = -2, gapExtension = -2)
-localAlign
+
+dynpro.value = function(i, j, d) {
+  if (asTable[i] == asTable[j]) {
+    # start
+    1
+  } else{
+    -1  
+  }
+  
+}
+dynpro.prevstates = function(i, j, d) {
+  c(0)
+}
+
+dynpro.decisions = function(i, j) {
+  c(0)
+}
+
+result = dynpro.matrix(asTable, asTable, dynpro.value, dynpro.prevstates, dynpro.decisions)
+
+ASMat = result$A
+
+"Aminosäuren"
+
+
+globalAlignAS <-
+  pairwiseAlignment(aa1, aa2, substitutionMatrix = ASMat,
+                    gapOpening = 0, gapExtension = 2)
+#Die Werte für eine Lücke werden positiv angegeben, d.h. -2 bedeutet +2
+globalAlignAS
+localAlignAS <-
+  pairwiseAlignment(aa1, aa2, type = "local", substitutionMatrix = ASMat,
+                    gapOpening = 0, gapExtension = 2)
+localAlignAS
 
 
 ```
