@@ -158,105 +158,66 @@ library(Biostrings)
 library(seqinr)
 ```
 
-Ich weiß hier nich was er haben will...
-Wenn wir die Score Matrix aus dem Aufgabenblatt nutzen wie verlangt kommt das halt raus ¯\_(ツ)_/¯
-und er meinte in der VL das man hier auch die Aminosäuren vergleichen soll ? aber das wäre beknackt weil man dafür ja BLOSOM50 braucht und das is bei der nächsten  ¯\_(ツ)_/¯
+Wenn wir die Score Matrix aus dem Aufgabenblatt nutzen wie verlangt (dann ist GapExtension = 2 (da GapOpening IMO nur eine zusäzliche penalty für die erste Lücke ist)) 
+Local geht von der Höchsten Local Score aus deshalb kommt nur ein Schnipsel(der mit der höchsten) raus.
+
 
 ```{r}
-#https://www.rdocumentation.org/packages/Biostrings/versions/2.40.2/topics/pairwiseAlignment
-
 s1 = input1
 s2 = input2
-aa2 = "KIQYKREPNIPSVSLINSLFAWEIRDRI"
-aa1 = "KAQYRRECMIFVWEINRL"
+aa1 = "KIQYKREPNIPSVSLINSLFAWEIRDRI"
+aa2 = "KAQYRRECMIFVWEINRL"
 mat <- nucleotideSubstitutionMatrix(match = 1, mismatch = -1, baseOnly = TRUE)
-#gap opening/extension nicht in der Aufgabe erwähnt und wenn man die ScoreMatrix in der #Aufgabenstellung nimmt wäre es das selbe .... . . oder ich bin zu blöd 
+
+#gapOpening wird nochmal draufgerechnent (wohl eher) ....
+#und "global" pairwiseAlignment ist nach "Needleman-Wunsch"
 globalAlign <-
   pairwiseAlignment(s1, s2, substitutionMatrix = mat,
-                    gapOpening = -2, gapExtension = -2)
+                    gapOpening = 0, gapExtension = 2)
 globalAlign
 localAlign <-
   pairwiseAlignment(s1, s2, type = "local", substitutionMatrix = mat,
-                    gapOpening = -2, gapExtension = -2)
+                    gapOpening = 0, gapExtension = 2)
 localAlign
 ```
-Nicht sicher ob das wirklich gefragt war .... ist aus der Aussage in A 2.4 "vergleiche" mit 2.3 entstanden
-```{R}
-#make ASsubstitutionMatrix
-as = "ARNDCQEGHILKMFPSTWYV"
-asTable = strsplit(as, split = "")[[1]]
 
+A 2.4
+gapOpening kann man leider nicht negativ machen ... also kann man das nicht erzwingen (zb so viele Gap Openings wie nur möglich) :(
 
-dynpro.value = function(i, j, d) {
-  if (asTable[i] == asTable[j]) {
-    # start
-    1
-  } else{
-    -1  
-  }
-  
-}
-dynpro.prevstates = function(i, j, d) {
-  c(0)
-}
+Wenn ich garkeine Gap-Penalty vergebe werden bei den mismatches natürlich nur Gaps verwendet.
+Wenn kein Gap-Opening-Penalty -> in der Mitte allein Stehende AS.
+Hier in diesem Fall führt die Opening panelty > 5 zum verschwinden der CMI Insel.
+Da dann die Penalty größer als die Belohnung der Matchenden Insel durch die BLOSUM Tabelle.
 
-dynpro.decisions = function(i, j) {
-  c(0)
-}
-
-result = dynpro.matrix(asTable, asTable, dynpro.value, dynpro.prevstates, dynpro.decisions)
-
-ASMat = result$A
-
-"Aminosäuren"
-
-
-globalAlignAS <-
-  pairwiseAlignment(aa1, aa2, substitutionMatrix = ASMat,
-                    gapOpening = 0, gapExtension = 2)
-#Die Werte für eine Lücke werden positiv angegeben, d.h. -2 bedeutet +2
-globalAlignAS
-localAlignAS <-
-  pairwiseAlignment(aa1, aa2, type = "local", substitutionMatrix = ASMat,
-                    gapOpening = 0, gapExtension = 2)
-localAlignAS
-
-
-```
-Hier kommt eig immer KAQYRRE------CMI---FVWEI-NRL raus bei jeglichen Kombinationen
-
-gapOpening kann man leider nicht negativ machen ... also kann man das nicht erzwingen :(
-wäre lustig genauso wie extensions
+Im Vergleich zu 2.3 wird hier die Blosum Tabelle genommen welche jedem Match/Mismatch Einen Wert gibt also bestimmte Mismatches "wertvoller" sind als Gaps. Und bestimmte Mismatches Wertvoller als andere Mismatches deshalb hängt an I auch noch CM dran da SL-CM besser als PN-CM.
 
 
 ```{R}
-## Amino acid global alignment
-pa = pairwiseAlignment(aa1, aa2, type = "local",
-                  substitutionMatrix = "BLOSUM62",
-                  gapOpening = 0, gapExtension = 0)
-pa
-pa = pairwiseAlignment(aa2, aa1, type = "local",
-                  substitutionMatrix = "BLOSUM62",
-                  gapOpening = 0, gapExtension = 0)
-pa
-
+# Amino acid global alignment
 pa = pairwiseAlignment(aa1, aa2, type = "global",
                   substitutionMatrix = "BLOSUM62",
-                  gapOpening = 0, gapExtension = 0)
+                  gapOpening = 1, gapExtension = 1)
 pa
-pa = pairwiseAlignment(aa2, aa1, type = "global",
+pa = pairwiseAlignment(aa1, aa2, type = "local",
                   substitutionMatrix = "BLOSUM62",
-                  gapOpening = 0, gapExtension = 0)
+                  gapOpening = 1, gapExtension = 1)
 pa
 
-# for(i in 0:12){
-#   for(j in 0:8){
+#data(BLOSUM62)
+#BLOSUM62
+
+# maxOpening = 6
+# maxExtending = 6
+# 
+# for(i in 0:maxOpening){
+#   for(j in 0:maxExtending){
 #     p = pairwiseAlignment(aa1, aa2,
-#                   substitutionMatrix = "BLOSUM50",
+#                   substitutionMatrix = "BLOSUM62",
 #                   gapOpening = i, gapExtension = j)
 #     print(c("Open",i,"ext",j))
 #     print(pattern(p))
 #     print(subject(p))
+#     print(score(p))
 #     pp = c(pp,subject(p))
 #   }
 # }
