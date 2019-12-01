@@ -191,16 +191,17 @@ Da dann die Penalty größer als die Belohnung der Matchenden Insel durch die BL
 
 Im Vergleich zu 2.3 wird hier die Blosum Tabelle genommen welche jedem Match/Mismatch Einen Wert gibt also bestimmte Mismatches "wertvoller" sind als Gaps. Und bestimmte Mismatches Wertvoller als andere Mismatches deshalb hängt an I auch noch CM dran da SL-CM besser als PN-CM.
 
+Mit 5|3 ist bei local der Local Score von KAQYRRE Höher als der rest -> wir nurnoch das genommen.
 
 ```{R}
 # Amino acid global alignment
 pa = pairwiseAlignment(aa1, aa2, type = "global",
                   substitutionMatrix = "BLOSUM62",
-                  gapOpening = 1, gapExtension = 1)
+                  gapOpening = 3, gapExtension = 1)
 pa
 pa = pairwiseAlignment(aa1, aa2, type = "local",
                   substitutionMatrix = "BLOSUM62",
-                  gapOpening = 1, gapExtension = 1)
+                  gapOpening = 5, gapExtension = 3)
 pa
 
 #data(BLOSUM62)
